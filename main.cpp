@@ -13,17 +13,14 @@ using namespace std;
 ofstream outf;
 ofstream percol;
 int N=1000;
-int	SL=100000; 		//ôï ìåãåèïò ôùí vector S,L
+int SL=100000; 		//ôï ìåãåèïò ôùí vector S,L
 vector<vector<int> >stuff(N,vector<int>(N,0));
 vector<long long int> L(SL,0);
 vector<long long int>  S(SL,0);
 int Lcount=1;
-double iav,pmax,iav2;
-double Siav,Spmax,Siav2;
+double iav,pmax,iav2,Siav,Spmax,Siav2,dens;
 double kappa=N*N;
-double dens;
-int xx, x,y;;
-int pointA, pointB, point;
+int xx, x,y,pointA, pointB, point;
 
 mt19937_64 gen((unsigned)time(NULL));
 uniform_real_distribution<> rn(0.0, 1.0);
@@ -31,48 +28,32 @@ uniform_int_distribution<> rnd(0, kappa-1);
 
 //vector<vector<int> >zeroes(N*N, vector<int>(2, -1));
 vector<vector<int> >zeroes;
-/*
-krataei suntetagmenes X,Y apo to stuff 2D vector me midenika
-0, 1
-1, 5
-...
-
-*/
-
 int zeroes_vec_cnt;
 
 void init(){
 	outf.open("testaxliopas.txt");
-
 	zeroes_vec_cnt = 0; // arxikopoihsh counter gia to zeroes position holder 2D vector
-
-
 		zeroes.clear();
 		zeroes.resize(kappa, vector<int> (2,-1));
-
 	cout<<zeroes.size() << "  SIZE SIZE SIZE"<< endl;
-
     for (int i=0; i <N; i++){    // ðïóåò åéíáé ïé ãñáììåò ôïõ ðéíáêá
         for (int j=0; j<N; j++){  	// ðïóåò åéáíé ïé óôçëåò ôïõ ðéíáêá
         	if(stuff[i][j]==0){
  				zeroes[zeroes_vec_cnt][0] = i;
 				zeroes[zeroes_vec_cnt][1] = j;
 				zeroes_vec_cnt++;
-			}
 		}
-   }
-   }
-
+	}
+    }
+}
 
 void stuff_output (std::string msg ){
 	outf << msg << endl;
-
 	cout << "  ";
 	for (int i=0; i<stuff.size(); i++){
 		cout << i << " ";
 	}
 	cout << endl << "  -------------------" << endl;
-
 	for (int i=0; i<stuff.size(); i++){
 		cout << i << "|";
 		for (int j=0; j<stuff[i].size(); j++){
@@ -85,8 +66,6 @@ void stuff_output (std::string msg ){
 	cout << endl;
 }
 
-
-
 int point_chooser (){   //int gia na epistrefei poio tha kratisei
 	uniform_int_distribution<> rndPnt(0, zeroes_vec_cnt - 1);
 	pointA=rndPnt(gen);
@@ -97,18 +76,14 @@ int point_chooser (){   //int gia na epistrefei poio tha kratisei
 	}while( pointB==pointA );																	//!!!!!!SOS tha thelei kai elegxo mipws den uparxei deutero simeio
 //	cout << "pointA: x=" << zeroes[pointA][0] << "  |  " <<"pointB: x=" << zeroes[pointB][0] << endl;
 //	cout << "pointA: y=" << zeroes[pointA][1] << "  |  " <<"pointB: y="<< zeroes[pointB][1]<< endl;
-
 	int sum_point[1][2];	//pointA --> sum_point[0][0]    |   pointB --> sum_point[0][1]
 	int connections[4];
 	for (int l=0; l<4; l++ ){
 		connections[l]=-2;
 	}
-
-
 	for(int c=0; c<2; c++){		//midenizw tous pinakes
 		sum_point[0][c]=1;
 	}
-
 	for(int cc=0; cc<2; cc++){		//edw tha kanw ton elegxo na dw poio simeio tha kratisw
 		if(cc==0){
 			x=zeroes[pointA][0];
@@ -136,7 +111,6 @@ int point_chooser (){   //int gia na epistrefei poio tha kratisei
 //				cout << sum_point[0][cc]<<" sum" <<endl;
 			}
 		}
-
 		if((x+1 < N) && (stuff[x+1][y] != 0)){		// elegxos katw
 //		cout << "Elegxos katw: stuff[" << x << "][" << y << "]=" << stuff[x+1][y] << endl;
 			if(L[stuff[x+1][y]] != connections[0] && L[stuff[x+1][y]] != connections[1] ){
@@ -171,14 +145,11 @@ int point_chooser (){   //int gia na epistrefei poio tha kratisei
 //èá ðáñù åíá ðïéíá êáé åíá ðïéíôâ óôçí cluster finder êáé èá êáíù ôïí åëåã÷ï ìåóá óå áõôçí, ðïéíôá êáé ðïéíôâ global,
 
 void cluster_finder(){
-
 	point=point_chooser();
-
 	x=zeroes[point][0];
 	y=zeroes[point][1];
 //	cout << "To zero point einai: stuff[" << x << "][" << y << "]=" << stuff[x][y] << endl;
 //	cout << "zeroes vec  " << zeroes_vec_cnt<< endl;
-
 	int first_label=-1;
 	if((x-1 >= 0) && (stuff[x-1][y] != 0)){			// elegxos panw
 //		cout << "Elegxos panw: stuff[" << x << "][" << y << "]=" << stuff[x-1][y] << endl;
@@ -209,7 +180,6 @@ void cluster_finder(){
 			}
 		}
 	}
-
 	if((x+1 < N) && (stuff[x+1][y] != 0)){	  		// elegxos katw
 //		cout << "Elegxos katw: stuff[" << x << "][" << y << "]=" << stuff[x+1][y] << endl;
 		if(first_label==-1){
@@ -261,7 +231,6 @@ void cluster_finder(){
 //	cout << x << "  " << y << endl;
 	zeroes.erase(zeroes.begin() + point);		//diagrafw to simeio apo ton pinaka twn zeroes
 	zeroes_vec_cnt=zeroes_vec_cnt - 1;			//meiwnw kata ena ton arithmo twn midenikwn
-
 }
 
 void  percol_finder(double& SIav, double& SPmax, double& SIav2){
@@ -277,9 +246,7 @@ void  percol_finder(double& SIav, double& SPmax, double& SIav2){
 	}
 	SIav2=SIav-1.0*Smax*Smax/(N*N*dens);
 	SPmax=Smax/(N*N*dens);
-
 }
-
 
 int main(){
 	int M=1;						//Ì ï áñéèìïò ôùí åðáíáëçøåùí
@@ -322,7 +289,6 @@ int main(){
 			L[i]=0;
 			S[i]=0;
 		}
-
 		init ();
 		for(int i=1; i<kappa; i++){		//kappa=N*N
 //		cout<< " i= " <<i <<endl;
@@ -348,10 +314,8 @@ int main(){
 					cout << dens<< endl;
 				}
 			}
-
 		}
 	}
-
 	percol << "dns" << '\t' << "Iav" << '\t' << '\t' << "Pmax" << '\t' << '\t'  <<"Iav2"<<endl; // '\t' << '\t'   << "dns2" << '\t' << "Iav" << '\t' << '\t' << "Pmax" << '\t' << '\t'  <<"Iav2" << endl;
 	for(int k=0; k<10; k++){
 		percol   << dns[k] << '\t' << Iav[k] <<  '\t' << '\t' << Pmax[k]  << '\t' << '\t' << Iav2[k] <<endl; // '\t' << '\t' << dns2[k] << '\t' << Iav0607[k] <<  '\t' << '\t' << Pmax0607[k]  << '\t' << '\t' << Iav20607[k] << endl;
@@ -370,6 +334,5 @@ int main(){
 	for (int i=0; i<L.size(); i++){						// ï ðéíáêááò S óôï .tzt
 		outf << S[i] << "  ";
 	}
-
 	return 0;
 }
